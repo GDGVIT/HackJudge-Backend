@@ -5,37 +5,35 @@
 </p>
 
 ---
-[![DOCS](https://img.shields.io/badge/Documentation-see%20docs-green?style=flat-square&logo=appveyor)](https://documenter.getpostman.com/view/10253201/SWTEbbZD?version=latest) 
-  [![UI ](https://img.shields.io/badge/User%20Interface-Link%20to%20UI-orange?style=flat-square&logo=appveyor)](INSERT_UI_LINK_HERE)
 
+[![DOCS](https://img.shields.io/badge/Documentation-see%20docs-green?style=flat-square&logo=appveyor)](https://documenter.getpostman.com/view/10709921/SzS2w82X?version=latest)
 
-## Functionalities
-User based
-- [ ]  Page to upload abstracts
-- [ ]  Link to the project
-Admin based
-- [ ]  Evaluation records of the teams + Review page + Details of teams
-- [ ]  Excel migration + abstracting 
-- [ ]  Integrating IBM watson to compare the abstracts releted to the problem statements
+## Functionality
+
+- [x] Page to upload abstracts
+- [x] Link to the project
+- [x] Evaluation records of the teams + Review page + Details of teams
+- [x] Excel migration + abstracting
+- [ ] Integrating IBM watson to compare the abstracts releted to the problem statements
 
 <br>
 
 ## Instructions to run
 
-* Pre-requisites:
-	- Node.js
-	- NPM
+- Pre-requisites: - Node.js + NPM
 
-* Setting up the app
+- Setting up the app
+
 ```bash
 git clone https://github.com/GDGVIT/HackJudge-Backend
 cd HackJudge-Backend
 ```
 
-* Setting up the environment
-	- Set the environment variable ```MONGO_ATLAS_PW``` to your mongodb instance
+## Setting up the environment 
+- Set the environment variable `MONGO_URL` to your mongodb instance 
+- Set the environment variable `JWT_PASS` to a secure password, used to encrypt JWTs
 
-* Running the app
+## Running the app
 
 ```bash
 npm install
@@ -46,9 +44,7 @@ npm start
 
 ## Contributors
 
-
-* [ Pragati1610 ](Ihttps://github.com/Pragati1610/HackJudge-Backend )
-
+- [Pragati1610](https://github.com/Pragati1610/HackJudge-Backend)
 
 <br>
 <br>

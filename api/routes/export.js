@@ -1,7 +1,7 @@
 const fs = require("fs");
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const { createObjectCsvWriter: createCsvWriter } = require("csv-writer");
 const Details = require("../models/details");
 
@@ -13,22 +13,36 @@ const csvwriter = createCsvWriter({
     { id: "abstract", title: "Abstract" }
   ]
 });
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  // verify jwt
+  const token = req.header("Authorization");
+  let email;
+  try {
+    email = jwt.verify(token, process.env.JWT_PASS);
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({
+      message: err
+    });
+  }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
+  }
+
   Details.find()
     .select("name email abstract _id")
     .exec()
     .then(async docs => {
-      const response = {
-        count: docs.length,
-        details: docs.map(doc => {
-          return {
-            name: doc.name,
-            email: doc.email,
-            abstract: doc.abstract,
-            _id: doc._id
-          };
-        })
-      };
       if (docs) {
         try {
           await csvwriter.writeRecords(docs);

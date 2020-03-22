@@ -1,70 +1,81 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-
+const log = require("console-debug-log");
+const { check, validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
 const Details = require("../models/details");
 
-router.get("/", (req, res) => {
-  console.log(req.headers.host);
-  Details.find()
-    .select("name email abstract _id")
-    .exec()
-    .then(docs => {
-      const response = {
-        count: docs.length,
-        details: docs.map(doc => {
-          return {
-            name: doc.name,
-            email: doc.email,
-            abstract: doc.abstract,
-            _id: doc._id
-          };
-        })
-      };
-      if (docs) {
-        res.status(200).json(docs);
-      } else {
-        res.status(404).json({
-          message: "no entries found"
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).json({
-        error: err
+router.post(
+  "/",
+  [
+    check("name"),
+    check("email"),
+    check("abstract"),
+    check("link"),
+    check("Authorization")
+  ],
+  (req, res) => {
+    log.debug(req.body);
+    // handle validation
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.status(422).json({
+        error: error.array()
+      });
+    }
+
+    // verify jwt
+    const token = req.header("Authorization");
+    let email;
+    try {
+      email = jwt.verify(token, process.env.JWT_PASS);
+    } catch (err) {
+      console.log(err);
+      return res.status(403).json({
+        message: err
+      });
+    }
+
+    // token verified, save details
+    const details = new Details({
+      _id: new mongoose.Types.ObjectId(),
+      name: req.body.name,
+      email: req.body.email,
+      abstract: req.body.abstract,
+      link: req.body.link
+    });
+    details.save().then(result => {
+      log.debug(result);
+      res.status(201).send({
+        message: "Create details successfully",
+        createdProduct: {
+          name: result.name,
+          email: result.email,
+          abstract: result.abstract,
+          link: result.link,
+          _id: result._id
+        }
       });
     });
-});
+  }
+);
 
-router.post("/", (req, res) => {
-  console.log(req.body);
-  const details = new Details({
-    _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    email: req.body.email,
-    abstract: req.body.abstract
-  });
-  details.save().then(result => {
-    console.log(result);
-    res.status(201).send({
-      message: "Create details successfully",
-      createdProduct: {
-        name: result.name,
-        email: result.email,
-        abstract: result.abstract,
-        _id: result._id
-      }
+router.get("/:detailsId", [check("Authorization")], (req, res) => {
+  // handle validation
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+    return res.status(422).json({
+      error: error.array()
     });
-  });
-});
+  }
 
-router.get("/:detailsId", (req, res) => {
-  const id = req.params.detailsId;
-  Details.findById(id)
+  // find details by mongo ID
+  Details.findById(req.params.detailsId)
     .select("name email abstract _id")
     .exec()
     .then(doc => {
-      console.log("From database", doc);
+      log.debug("From database", doc);
       if (doc) {
         res.status(200).json(doc);
       } else {
@@ -72,33 +83,72 @@ router.get("/:detailsId", (req, res) => {
       }
     })
     .catch(err => {
-      console.log(err);
+      log.debug(err);
       res.status(500).json({
         error: err
       });
     });
 });
 
-router.patch("/:detailsId", (req, res, next) => {
-  const id = req.params.detailsId;
-  const updateOps = {};
-  for (const ops of req.body) {
-    updateOps[ops.propName] = ops.value;
+router.patch("/:detailsId", [check("Authorization")], (req, res) => {
+  // handle validation
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+    return res.status(422).json({
+      error: error.array()
+    });
   }
-  Details.update({ _id: id }, { $set: updateOps })
+
+  // validate jwt
+  const token = req.header("Authorization");
+  let isValid = false;
+  let email;
+  try {
+    email = jwt.verify(token, process.env.JWT_PASS);
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({
+      message: err
+    });
+  }
+  const id = req.params.detailsId;
+  Details.where({
+    email: email
+  })
+    .findOne()
     .exec()
     .then(result => {
-      res.status(200).json({
-        message: "Product updated",
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/details/" + id
-        }
-      });
+      isValid = result.email === email;
+      const updateOps = {};
+      if (!isValid) {
+        return res.status(403).json({
+          message: "You are forbidden from modifying this resource"
+        });
+      }
+      for (const ops of Object.keys(req.body)) {
+        updateOps[ops] = req.body[ops];
+      }
+      Details.update({ _id: id }, { $set: updateOps })
+        .exec()
+        .then(result => {
+          res.status(200).json({
+            message: "Product updated",
+            request: {
+              type: "GET",
+              url: "http://localhost:8080/details/" + id
+            }
+          });
+        })
+        .catch(err => {
+          log.debug(err);
+          res.status(500).json({
+            error: err
+          });
+        });
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({
+      return res.status(500).json({
         error: err
       });
     });
@@ -110,7 +160,7 @@ router.delete("/:detailsId", async (req, res) => {
   try {
     result = await Details.remove({ _id: id }).exec();
   } catch (err) {
-    console.log(err);
+    log.debug(err);
     res.status(500).json({
       error: err
     });
