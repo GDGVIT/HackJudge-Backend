@@ -25,7 +25,6 @@ mongoose.connection
     console.log("Error connecting to mongoDB:", err);
   });
 
-//mongoose.Promise = global.Promise;
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -110,7 +110,6 @@ router.get("/", [check("Authorization")], (req, res) => {
     });
 });
 
-
 router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
   const id = req.params.evaluateId;
   // handle validation
@@ -141,7 +140,7 @@ router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
     .exec()
     .then(result => {
       res.status(200).json({
-        message: "evaluation updated"     
+        message: "evaluation updated"
       });
     })
     .catch(err => {

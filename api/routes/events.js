@@ -161,9 +161,9 @@ router.patch("/:eventsId", [check("Authorization")], (req, res) => {
   Admin.where({
     email: email
   })
-  .findOne()
-  .exec()
-  .then(result => {
+    .findOne()
+    .exec()
+    .then(result => {
       isValid = result.email === email;
       const updateOps = {};
       if (!isValid) {
@@ -174,30 +174,31 @@ router.patch("/:eventsId", [check("Authorization")], (req, res) => {
       for (const ops of Object.keys(req.body)) {
         updateOps[ops] = req.body[ops];
       }
-  // update fields
-  Events.update({ _id: id }, { $set: updateOps })
-    .exec()
-    .then(() => {
-      res.status(200).json({
-        message: "Event updated",
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/events/" + id
-        }
-      });
+      // update fields
+      Events.update({ _id: id }, { $set: updateOps })
+        .exec()
+        .then(() => {
+          res.status(200).json({
+            message: "Event updated",
+            request: {
+              type: "GET",
+              url: "http://localhost:8080/events/" + id
+            }
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).json({
+            error: err
+          });
+        });
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({
+      return res.status(500).json({
         error: err
       });
     });
-}).catch(err => {
-  console.log(err);
-  return res.status(500).json({
-    error: err
-  });
-  });
 });
 
 router.delete("/:eventsId", [check("Authorization")], async (req, res) => {
