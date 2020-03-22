@@ -5,6 +5,7 @@ const { check, validationResult } = require("express-validator");
 const log = require("console-debug-log");
 const jwt = require("jsonwebtoken");
 const Events = require("../models/events");
+const Admin = require("../models/admin");
 
 router.get("/", [check("Authorization")], (req, res) => {
   // handle validation
@@ -157,7 +158,7 @@ router.patch("/:eventsId", [check("Authorization")], (req, res) => {
     });
   }
   const id = req.params.eventsId;
-  Events.where({
+  Admin.where({
     email: email
   })
   .findOne()

@@ -5,6 +5,7 @@ const { check, validationResult } = require("express-validator");
 const log = require("console-debug-log");
 const jwt = require("jsonwebtoken");
 const Evaluate = require("../models/evaluate");
+const Details = require("../models/details");
 
 router.post(
   "/",
@@ -68,6 +69,48 @@ router.post(
   }
 );
 
+router.get("/", [check("Authorization")], (req, res) => {
+  // handle validation
+  const error = validationResult(req);
+  if (!error.isEmpty()) {
+    return res.status(422).json({
+      error: error.array()
+    });
+  }
+
+  // validate jwt
+  const token = req.header("Authorization");
+  let email;
+  try {
+    email = jwt.verify(token, process.env.JWT_PASS);
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({
+      message: err
+    });
+  }
+
+  // jwt verified, find event by ID
+  Details.find()
+    .select(" name email abstract link _id")
+    .exec()
+    .then(docs => {
+      if (docs) {
+        res.status(200).json(docs);
+      } else {
+        res.status(404).json({
+          message: "no details found"
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: err
+      });
+    });
+});
+
+
 router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
   const id = req.params.evaluateId;
   // handle validation
@@ -89,7 +132,6 @@ router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
       message: err
     });
   }
-
   // check fields for update
   const updateOps = {};
   for (const ops of Object.keys(req.body)) {
@@ -99,11 +141,7 @@ router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
     .exec()
     .then(result => {
       res.status(200).json({
-        message: "evaluation updated",
-        request: {
-          type: "GET",
-          url: "http://localhost:8080/evaluate/" + id
-        }
+        message: "evaluation updated"     
       });
     })
     .catch(err => {
