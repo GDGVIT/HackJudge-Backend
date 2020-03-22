@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const V_R = require("../models/view_review");
+const jwt = require("jsonwebtoken");
+const Evaluate = require("../models/evaluate");
 
 router.get("/", (req, res) => {
   console.log(req.headers.host);
@@ -14,7 +16,7 @@ router.get("/", (req, res) => {
       message: err
     });
   }
-  V_R.find()
+  Evaluate.find()
     .select("abstract link analysis review addComments metrics")
     .exec()
     .then(docs => {
@@ -45,7 +47,7 @@ router.get("/:vrId", (req, res) => {
     });
   }
   const id = req.params.vrId;
-  V_R.findById(id)
+  Evaluate.findById(id)
     .select("abstract link analysis review addComments metrics")
     .exec()
     .then(doc => {
