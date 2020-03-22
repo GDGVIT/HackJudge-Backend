@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const Events = require("../models/events");
 const Admin = require("../models/admin");
 
-router.get("/", [check("Authorization")], (req, res) => {
+router.get("/", [check("Authorization")], async (req, res) => {
   // handle validation
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -26,6 +26,19 @@ router.get("/", [check("Authorization")], (req, res) => {
     return res.status(403).json({
       message: err
     });
+  }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
   }
 
   // jwt verified, find event by ID
@@ -48,7 +61,7 @@ router.get("/", [check("Authorization")], (req, res) => {
     });
 });
 
-router.post("/", [check("Authorization")], (req, res) => {
+router.post("/", [check("Authorization")], async (req, res) => {
   log.debug(req.body);
   // handle validation
   const error = validationResult(req);
@@ -70,7 +83,20 @@ router.post("/", [check("Authorization")], (req, res) => {
     });
   }
 
-  // jet verified, save events
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
+  }
+
+  // jwt verified, save events
   const events = new Events({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
@@ -94,7 +120,7 @@ router.post("/", [check("Authorization")], (req, res) => {
   });
 });
 
-router.get("/:eventsId", [check("Authorization")], (req, res) => {
+router.get("/:eventsId", [check("Authorization")], async (req, res) => {
   // handle validation
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -113,6 +139,19 @@ router.get("/:eventsId", [check("Authorization")], (req, res) => {
     return res.status(403).json({
       message: err
     });
+  }
+  
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
   }
 
   // jwt verified, find event by ID
@@ -136,7 +175,7 @@ router.get("/:eventsId", [check("Authorization")], (req, res) => {
     });
 });
 
-router.patch("/:eventsId", [check("Authorization")], (req, res) => {
+router.patch("/:eventsId", [check("Authorization")], async (req, res) => {
   // handle validation
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -164,7 +203,7 @@ router.patch("/:eventsId", [check("Authorization")], (req, res) => {
     .findOne()
     .exec()
     .then(result => {
-      isValid = result.email === email;
+      isValid = (result.email === email) && (result.isAdmin);
       const updateOps = {};
       if (!isValid) {
         return res.status(403).json({
@@ -220,6 +259,19 @@ router.delete("/:eventsId", [check("Authorization")], async (req, res) => {
     return res.status(403).json({
       message: err
     });
+  }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
   }
 
   // jwt verified, delete event

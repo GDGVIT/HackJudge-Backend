@@ -13,7 +13,8 @@ const csvwriter = createCsvWriter({
     { id: "abstract", title: "Abstract" }
   ]
 });
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  // verify jwt
   const token = req.header("Authorization");
   let email;
   try {
@@ -24,6 +25,20 @@ router.get("/", (req, res) => {
       message: err
     });
   }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
+  }
+
   Details.find()
     .select("name email abstract _id")
     .exec()
