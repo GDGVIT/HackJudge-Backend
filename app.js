@@ -38,7 +38,7 @@ app.use("/admin", adminRoutes);
 app.use("/export", exportRoutes);
 app.use("/events", eventsRoutes);
 app.use("/evaluate", evaluateRoutes);
-app.use("/viewReview", viewReviewRoutes);
+app.use("/view_review", viewReviewRoutes);
 // app.use("/calculate", calculateRoutes);
 
 module.exports = app;
