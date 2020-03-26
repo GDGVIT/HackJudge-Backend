@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const V_R = require("../models/view_review");
 const jwt = require("jsonwebtoken");
 const Evaluate = require("../models/evaluate");
 
-router.get("/", (req, res) => {
-  console.log(req.headers.host);
+router.get("/", async (req, res) => {
+  // verify jwt
   const token = req.header("Authorization");
   let email;
   try {
@@ -16,6 +15,20 @@ router.get("/", (req, res) => {
       message: err
     });
   }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
+  }
+
   Evaluate.find()
     .select("abstract link analysis review addComments metrics")
     .exec()
@@ -35,7 +48,8 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:vrId", (req, res) => {
+router.get("/:vrId", async (req, res) => {
+  // verify jwt
   const token = req.header("Authorization");
   let email;
   try {
@@ -46,6 +60,20 @@ router.get("/:vrId", (req, res) => {
       message: err
     });
   }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
+  }
+
   const id = req.params.vrId;
   Evaluate.findById(id)
     .select("abstract link analysis review addComments metrics")

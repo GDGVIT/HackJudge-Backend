@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const { check, validationResult } = require("express-validator");
 const log = require("console-debug-log");
 const jwt = require("jsonwebtoken");
+const Admin = require("../models/admin");
 const Evaluate = require("../models/evaluate");
 const Details = require("../models/details");
 
@@ -18,7 +19,7 @@ router.post(
     check("addComments"),
     check("metrics")
   ],
-  (req, res) => {
+  async (req, res) => {
     log.debug(req.body);
     // handle validation
     const error = validationResult(req);
@@ -39,6 +40,19 @@ router.post(
         message: err
       });
     }
+
+    // verify if admin
+    try {
+      let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
+  }
 
     // jwt verified, save evaluation object
     const details = new Evaluate({
@@ -69,7 +83,7 @@ router.post(
   }
 );
 
-router.get("/", [check("Authorization")], (req, res) => {
+router.get("/", [check("Authorization")], async (req, res) => {
   // handle validation
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -88,6 +102,19 @@ router.get("/", [check("Authorization")], (req, res) => {
     return res.status(403).json({
       message: err
     });
+  }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
   }
 
   // jwt verified, find event by ID
@@ -110,8 +137,7 @@ router.get("/", [check("Authorization")], (req, res) => {
     });
 });
 
-
-router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
+router.patch("/:evaluateId", [check("Authorization")], async (req, res) => {
   const id = req.params.evaluateId;
   // handle validation
   const error = validationResult(req);
@@ -132,6 +158,20 @@ router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
       message: err
     });
   }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
+  }
+
   // check fields for update
   const updateOps = {};
   for (const ops of Object.keys(req.body)) {
@@ -141,7 +181,7 @@ router.patch("/:evaluateId", [check("Authorization")], (req, res) => {
     .exec()
     .then(result => {
       res.status(200).json({
-        message: "evaluation updated"     
+        message: "evaluation updated"
       });
     })
     .catch(err => {
@@ -160,6 +200,19 @@ router.get("/:evaluateId", [check("Authorization")], async (req, res) => {
     return res.status(422).json({
       error: error.array()
     });
+  }
+
+  // verify if admin
+  try {
+    let user = await Admin.findOne({ email: email });
+    if (!user.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are forbidden from modifying this resource" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(403).json({ error: err });
   }
 
   // verify jwt
