@@ -1,7 +1,9 @@
 <p align="center">
+<a href="https://dscvit.com">
 	<img src="https://user-images.githubusercontent.com/30529572/72455010-fb38d400-37e7-11ea-9c1e-8cdeb5f5906e.png" />
-	<h2 align="center"> Hackjudge-Portal-Backend </h2>
-	<h4 align="center"> To ease the judging procedure <h4>
+</a>
+	<h2 align="center"> HackJudge Portal Backend </h2>
+	<h4 align="center"> Backend to help make judging easier. <h4>
 </p>
 
 ---
@@ -16,17 +18,13 @@
 - [x] Excel migration + abstracting
 - [ ] Integrating IBM watson to compare the abstracts releted to the problem statements
 
-<br>
-
 ## Instructions to run
-
 - Pre-requisites: - Node.js + NPM
-
 - Setting up the app
 
 ```bash
-git clone https://github.com/GDGVIT/HackJudge-Backend
-cd HackJudge-Backend
+$ git clone https://github.com/GDGVIT/HackJudge-Backend
+$ cd HackJudge-Backend
 ```
 
 ## Setting up the environment 
@@ -40,15 +38,15 @@ npm install
 npm start
 ```
 
-<br>
+# Contributors
 
-## Contributors
+* [ Pragati ](https://github.com/Pragati1610)
+* [ Amogh ](https://github.com/ATechnoHazard)
 
-- [Pragati1610](https://github.com/Pragati1610/HackJudge-Backend)
+## License
 
-<br>
-<br>
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 <p align="center">
-	Made with :heart: by DSC VIT
+	Made with :heart: by <a href="https://dscvit.com">DSC VIT</a>
 </p>
