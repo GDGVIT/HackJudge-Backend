@@ -34,8 +34,8 @@ $ cd HackJudge-Backend
 ## Running the app
 
 ```bash
-npm install
-npm start
+$ npm install
+$ npm start
 ```
 
 # Contributors
