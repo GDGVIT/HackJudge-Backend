@@ -13,10 +13,12 @@ const viewReviewRoutes = require("./api/routes/view_review");
 const evaluateRoutes = require("./api/routes/evaluate");
 //const calculateRoutes = require("./api/routes/calculate");
 
+console.log(process.env.MONGO_URL);
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
 mongoose.connection
   .once("open", () => {
     console.log("Connection to mongoDB established");
