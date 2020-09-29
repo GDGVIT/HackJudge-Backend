@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
   }
 
   Evaluate.find()
-    .select("_id abstract link analysis review addComments metrics isSelected")
+    .select("_id abstract link analysis review addComments metrics isSelected isStandBy")
     .exec()
     .then(docs => {
       if (docs) {
@@ -76,7 +76,7 @@ router.get("/:vrId", async (req, res) => {
 
   const id = req.params.vrId;
   Evaluate.findById(id)
-    .select("_id abstract link analysis review addComments metrics isSelected")
+    .select("_id abstract link analysis review addComments metrics isSelected isStandBy")
     .exec()
     .then(doc => {
       console.log("From database", doc);

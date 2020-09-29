@@ -18,7 +18,8 @@ router.post(
     check("review"),
     check("addComments"),
     check("metrics"),
-    check("isSelected")
+    check("isSelected"),
+    check("isStandBy")
   ],
   async (req, res) => {
     log.debug(req.body);
@@ -64,7 +65,8 @@ router.post(
       review: req.body.review,
       addComments: req.body.addComments,
       metrics: req.body.metrics,
-      isSelected: req.body.isSelected
+      isSelected: req.body.isSelected,
+      isStandBy: req.body.isStandBy
     });
 
     details.save().then(result => {
@@ -79,6 +81,7 @@ router.post(
           addComments: result.addComments,
           metrics: result.metrics,
           isSelected: result.isSelected,
+          isStandBy: result.isStandBy,
           _id: result._id
         }
       });
