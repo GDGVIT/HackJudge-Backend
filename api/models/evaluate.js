@@ -12,8 +12,8 @@ const evaluationSchema = mongoose.Schema({
   review: { type: String, require: true },
   addComments: { type: String },
   metrics: { type: [metricSchema], require: true },
-  isSelected: {type: boolean, default: false},
-  isStandBy: {type: boolean, default: true}
+  isSelected: {type: Boolean, default: false},
+  isStandBy: {type: Boolean, default: true}
 });
 
 module.exports = mongoose.model("Evaluate", evaluationSchema);
