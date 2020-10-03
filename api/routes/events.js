@@ -43,7 +43,7 @@ router.get("/", [check("Authorization")], async (req, res) => {
 
   // jwt verified, find event by ID
   Events.find()
-    .select("problemStatements rounds metric name _id")
+    .select("problemStatements rounds metric name _id dateOfEvent")
     .exec()
     .then(docs => {
       if (docs) {
@@ -102,7 +102,8 @@ router.post("/", [check("Authorization")], async (req, res) => {
     name: req.body.name,
     problemStatements: req.body.problemStatements,
     rounds: req.body.rounds,
-    metric: req.body.metric
+    metric: req.body.metric,
+    dateOfEvent: req.body.dateOfEvent,
   });
   events.save().then(result => {
     console.log(result);
@@ -114,7 +115,8 @@ router.post("/", [check("Authorization")], async (req, res) => {
         url: result.url,
         problemStatements: result.problemStatements,
         rounds: result.rounds,
-        metric: result.metric
+        metric: result.metric,
+        dateOfEvent: result.dateOfEvent
       }
     });
   });
@@ -157,7 +159,7 @@ router.get("/:eventsId", [check("Authorization")], async (req, res) => {
   // jwt verified, find event by ID
   const id = req.params.eventsId;
   Events.findById(id)
-    .select("problemStatements rounds metric name _id")
+    .select("problemStatements rounds metric name _id dateOfEvent")
     .exec()
     .then(doc => {
       console.log("From database", doc);

@@ -9,7 +9,8 @@ const eventsSchema = mongoose.Schema({
 
   metric: { type: [metricSchema], required: true },
   rounds: { type: Number, required: true },
-  problemStatements: { type: [String], required: true }
+  problemStatements: { type: [String], required: true },
+  dateOfEvent: {type: Date, required: true}
 });
 
 module.exports = mongoose.model("Events", eventsSchema);
