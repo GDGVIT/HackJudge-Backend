@@ -14,7 +14,7 @@
 - [x] Link to the project
 - [x] Evaluation records of the teams + Review page + Details of teams
 - [x] Excel migration + abstracting
-- [ ] Integrating IBM watson to compare the abstracts releted to the problem statements
+- [ ] Integrating IBM watson to compare the abstracts related to the problem statements
 
 <br>
 
