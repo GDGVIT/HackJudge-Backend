@@ -60,7 +60,7 @@ router.post(
 
 router.post(
   "/login",
-  [check("email").isEmail(), check("password").isLength({ min: 7, max: 32 })],
+  [check("email").isEmail(), check("password").isLength({ min: 7, max: 32 }),check("isAdmin")],
   (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
@@ -68,7 +68,7 @@ router.post(
         error: error.array()
       });
     }
-    Admin.find({ email: req.body.email })
+    Admin.find({ email: req.body.email, isAdmin: req.body.isAdmin })
       .exec()
       .then(admin => {
         if (admin.length < 1) {

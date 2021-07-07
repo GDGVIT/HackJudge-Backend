@@ -1,2 +1,4 @@
 node_modules
 results.csv
+nodemon.json
+.env

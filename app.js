@@ -13,10 +13,12 @@ const viewReviewRoutes = require("./api/routes/view_review");
 const evaluateRoutes = require("./api/routes/evaluate");
 //const calculateRoutes = require("./api/routes/calculate");
 
+console.log(process.env.MONGO_URL);
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
+
 mongoose.connection
   .once("open", () => {
     console.log("Connection to mongoDB established");
@@ -37,7 +39,7 @@ app.use("/admin", adminRoutes);
 app.use("/export", exportRoutes);
 app.use("/events", eventsRoutes);
 app.use("/evaluate", evaluateRoutes);
-app.use("/viewReview", viewReviewRoutes);
+app.use("/view_review", viewReviewRoutes);
 // app.use("/calculate", calculateRoutes);
 
 module.exports = app;
